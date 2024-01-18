@@ -73,7 +73,7 @@ services:
     hostname: pinot-server
     volumes:
       - ./pinot-docker-demo/pinot/server:/tmp/data/server
-      - ./../../../build/lib/pinot-all-1.1.0-SNAPSHOT-jar-with-dependencies.jar:/opt/pinot/lib/pinot-all-1.0.0-jar-with-dependencies.jar
+      - ./../../../build/lib/pinot-all-1.0.0-jar-with-dependencies.jar:/opt/pinot/lib/pinot-all-1.0.0-jar-with-dependencies.jar
     ports:
       - "8098:8098"
       - "5005:5005"
