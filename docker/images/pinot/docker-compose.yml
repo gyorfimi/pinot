@@ -49,7 +49,7 @@ services:
     depends_on:
       - zookeeper
   pinot-controller:
-    image: apachepinot/pinot:release-0.7.1
+    image: apachepinot/pinot:release-1.0.0
     hostname: pinot-controller
     volumes:
       - ./pinot-docker-demo/pinot/controller:/tmp/data/controller
@@ -59,7 +59,7 @@ services:
     depends_on:
       - kafka
   pinot-broker:
-    image: apachepinot/pinot:release-0.7.1
+    image: apachepinot/pinot:release-1.0.0
     hostname: pinot-broker
     ports:
       - "8099:8099"
@@ -69,12 +69,16 @@ services:
       - kafka
       - pinot-controller
   pinot-server:
-    image: apachepinot/pinot:release-0.7.1
+    image: apachepinot/pinot:release-1.0.0
     hostname: pinot-server
     volumes:
       - ./pinot-docker-demo/pinot/server:/tmp/data/server
+      - ./../../../build/lib/pinot-all-1.1.0-SNAPSHOT-jar-with-dependencies.jar:/opt/pinot/lib/pinot-all-1.0.0-jar-with-dependencies.jar
     ports:
       - "8098:8098"
+      - "5005:5005"
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     command: StartServer -zkAddress zookeeper:2181
     depends_on:
       - zookeeper
