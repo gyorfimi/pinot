@@ -771,6 +771,128 @@ public final class DataBlockUtils {
     return values;
   }
 
+  public static String[][] extractStringMultiValuesForColumn(DataBlock dataBlock, int colId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(colId).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.STRING_ARRAY,
+            "Cannot extract String Array values for column: %s with stored type: %s", dataSchema.getColumnName(colId),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(colId);
+    int numRows = dataBlock.getNumberOfRows();
+    String[][] values = new String[numRows][];
+    if (nullBitmap == null) {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        values[rowId] = dataBlock.getStringArray(rowId, colId);
+      }
+    } else {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        if (nullBitmap.contains(rowId)) {
+          continue;
+        }
+        values[rowId] = dataBlock.getStringArray(rowId, colId);
+      }
+    }
+    return values;
+  }
+
+  public static int[][] extractIntMultiValuesForColumn(DataBlock dataBlock, int colId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(colId).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.INT_ARRAY,
+            "Cannot extract Int Array values for column: %s with stored type: %s", dataSchema.getColumnName(colId),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(colId);
+    int numRows = dataBlock.getNumberOfRows();
+    int[][] values = new int[numRows][];
+    if (nullBitmap == null) {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        values[rowId] = dataBlock.getIntArray(rowId, colId);
+      }
+    } else {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        if (nullBitmap.contains(rowId)) {
+          continue;
+        }
+        values[rowId] = dataBlock.getIntArray(rowId, colId);
+      }
+    }
+    return values;
+  }
+
+  public static long[][] extractLongMultiValuesForColumn(DataBlock dataBlock, int colId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(colId).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.LONG_ARRAY,
+            "Cannot extract Long Array values for column: %s with stored type: %s", dataSchema.getColumnName(colId),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(colId);
+    int numRows = dataBlock.getNumberOfRows();
+    long[][] values = new long[numRows][];
+    if (nullBitmap == null) {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        values[rowId] = dataBlock.getLongArray(rowId, colId);
+      }
+    } else {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        if (nullBitmap.contains(rowId)) {
+          continue;
+        }
+        values[rowId] = dataBlock.getLongArray(rowId, colId);
+      }
+    }
+    return values;
+  }
+
+  public static float[][] extractFloatMultiValuesForColumn(DataBlock dataBlock, int colId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(colId).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.FLOAT_ARRAY,
+            "Cannot extract Float Array values for column: %s with stored type: %s", dataSchema.getColumnName(colId),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(colId);
+    int numRows = dataBlock.getNumberOfRows();
+    float[][] values = new float[numRows][];
+    if (nullBitmap == null) {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        values[rowId] = dataBlock.getFloatArray(rowId, colId);
+      }
+    } else {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        if (nullBitmap.contains(rowId)) {
+          continue;
+        }
+        values[rowId] = dataBlock.getFloatArray(rowId, colId);
+      }
+    }
+    return values;
+  }
+
+  public static double[][] extractDoubleMultiValuesForColumn(DataBlock dataBlock, int colId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(colId).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.DOUBLE_ARRAY,
+            "Cannot extract Double Array values for column: %s with stored type: %s", dataSchema.getColumnName(colId),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(colId);
+    int numRows = dataBlock.getNumberOfRows();
+    double[][] values = new double[numRows][];
+    if (nullBitmap == null) {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        values[rowId] = dataBlock.getDoubleArray(rowId, colId);
+      }
+    } else {
+      for (int rowId = 0; rowId < numRows; rowId++) {
+        if (nullBitmap.contains(rowId)) {
+          continue;
+        }
+        values[rowId] = dataBlock.getDoubleArray(rowId, colId);
+      }
+    }
+    return values;
+  }
+
+
+
   /**
    * Given a datablock and the column index, extracts the byte values for the column. Prefer using this function over
    * extractRowFromDatablock if the desired datatype is known to prevent autoboxing to Object and later unboxing to the
@@ -1093,6 +1215,200 @@ public final class DataBlockUtils {
           continue;
         }
         rows[outRowId++] = dataBlock.getBytes(inRowId, colId).getBytes();
+      }
+    }
+    return Arrays.copyOfRange(rows, 0, outRowId);
+  }
+
+  public static int[] extractNumMVEntriesForColumn(DataBlock dataBlock, int index) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(index).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.INT_ARRAY || storedType == ColumnDataType.LONG_ARRAY
+            || storedType == ColumnDataType.FLOAT_ARRAY || storedType == ColumnDataType.DOUBLE_ARRAY
+            || storedType == ColumnDataType.STRING_ARRAY,
+            "Cannot extract numMVEntries for column: %s with stored type: %s", dataSchema.getColumnName(index),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(index);
+    int numRows = dataBlock.getNumberOfRows();
+    int[] rows = new int[numRows];
+    for (int rowId = 0; rowId < numRows; rowId++) {
+      if (nullBitmap != null && nullBitmap.contains(rowId)) {
+        rows[rowId] = 0;
+        continue;
+      }
+      switch (storedType) {
+          case INT_ARRAY:
+            rows[rowId] = dataBlock.getIntArray(rowId, index).length;
+            break;
+          case LONG_ARRAY:
+            rows[rowId] = dataBlock.getLongArray(rowId, index).length;
+            break;
+          case FLOAT_ARRAY:
+            rows[rowId] = dataBlock.getFloatArray(rowId, index).length;
+            break;
+          case DOUBLE_ARRAY:
+            rows[rowId] = dataBlock.getDoubleArray(rowId, index).length;
+            break;
+          case STRING_ARRAY:
+            rows[rowId] = dataBlock.getStringArray(rowId, index).length;
+            break;
+        default:
+            rows[rowId] = 0;
+            break;
+      }
+    }
+    return rows;
+  }
+
+  public static String[][] extractStringMultiValuesForColumn(DataBlock dataBlock, int index, int filterArgId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(index).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.STRING_ARRAY,
+            "Cannot extract String Array values for column: %s with stored type: %s", dataSchema.getColumnName(index),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(index);
+    int numRows = dataBlock.getNumberOfRows();
+    String[][] rows = new String[numRows][];
+    int outRowId = 0;
+    for (int inRowId = 0; inRowId < numRows; inRowId++) {
+      if (dataBlock.getInt(inRowId, filterArgId) == 1) {
+        if (nullBitmap != null && nullBitmap.contains(inRowId)) {
+          outRowId++;
+          continue;
+        }
+        rows[outRowId++] = dataBlock.getStringArray(inRowId, index);
+      }
+    }
+    return Arrays.copyOfRange(rows, 0, outRowId);
+  }
+
+  public static int[][] extractIntMultiValuesForColumn(DataBlock dataBlock, int index, int filterArgId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(index).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.INT_ARRAY,
+            "Cannot extract Int Array values for column: %s with stored type: %s", dataSchema.getColumnName(index),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(index);
+    int numRows = dataBlock.getNumberOfRows();
+    int[][] rows = new int[numRows][];
+    int outRowId = 0;
+    for (int inRowId = 0; inRowId < numRows; inRowId++) {
+      if (dataBlock.getInt(inRowId, filterArgId) == 1) {
+        if (nullBitmap != null && nullBitmap.contains(inRowId)) {
+          outRowId++;
+          continue;
+        }
+        rows[outRowId++] = dataBlock.getIntArray(inRowId, index);
+      }
+    }
+    return Arrays.copyOfRange(rows, 0, outRowId);
+  }
+
+  public static long[][] extractLongMultiValuesForColumn(DataBlock dataBlock, int index, int filterArgId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(index).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.LONG_ARRAY,
+            "Cannot extract Long Array values for column: %s with stored type: %s", dataSchema.getColumnName(index),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(index);
+    int numRows = dataBlock.getNumberOfRows();
+    long[][] rows = new long[numRows][];
+    int outRowId = 0;
+    for (int inRowId = 0; inRowId < numRows; inRowId++) {
+      if (dataBlock.getInt(inRowId, filterArgId) == 1) {
+        if (nullBitmap != null && nullBitmap.contains(inRowId)) {
+          outRowId++;
+          continue;
+        }
+        rows[outRowId++] = dataBlock.getLongArray(inRowId, index);
+      }
+    }
+    return Arrays.copyOfRange(rows, 0, outRowId);
+  }
+
+  public static float[][] extractFloatMultiValuesForColumn(DataBlock dataBlock, int index, int filterArgId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(index).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.FLOAT_ARRAY,
+            "Cannot extract Float Array values for column: %s with stored type: %s", dataSchema.getColumnName(index),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(index);
+    int numRows = dataBlock.getNumberOfRows();
+    float[][] rows = new float[numRows][];
+    int outRowId = 0;
+    for (int inRowId = 0; inRowId < numRows; inRowId++) {
+      if (dataBlock.getInt(inRowId, filterArgId) == 1) {
+        if (nullBitmap != null && nullBitmap.contains(inRowId)) {
+          outRowId++;
+          continue;
+        }
+        rows[outRowId++] = dataBlock.getFloatArray(inRowId, index);
+      }
+    }
+    return Arrays.copyOfRange(rows, 0, outRowId);
+  }
+
+  public static double[][] extractDoubleMultiValuesForColumn(DataBlock dataBlock, int index, int filterArgId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(index).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.DOUBLE_ARRAY,
+            "Cannot extract Double Array values for column: %s with stored type: %s", dataSchema.getColumnName(index),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(index);
+    int numRows = dataBlock.getNumberOfRows();
+    double[][] rows = new double[numRows][];
+    int outRowId = 0;
+    for (int inRowId = 0; inRowId < numRows; inRowId++) {
+      if (dataBlock.getInt(inRowId, filterArgId) == 1) {
+        if (nullBitmap != null && nullBitmap.contains(inRowId)) {
+          outRowId++;
+          continue;
+        }
+        rows[outRowId++] = dataBlock.getDoubleArray(inRowId, index);
+      }
+    }
+    return Arrays.copyOfRange(rows, 0, outRowId);
+  }
+
+  public static int[] extractNumMVEntriesForColumn(DataBlock dataBlock, int index, int filterArgId) {
+    DataSchema dataSchema = dataBlock.getDataSchema();
+    ColumnDataType storedType = dataSchema.getColumnDataType(index).getStoredType();
+    Preconditions.checkState(storedType == ColumnDataType.INT_ARRAY
+                    || storedType == ColumnDataType.LONG_ARRAY
+                    || storedType == ColumnDataType.FLOAT_ARRAY || storedType == ColumnDataType.DOUBLE_ARRAY
+                    || storedType == ColumnDataType.STRING_ARRAY,
+            "Cannot extract numMVEntries for column: %s with stored type: %s", dataSchema.getColumnName(index),
+            storedType);
+    RoaringBitmap nullBitmap = dataBlock.getNullRowIds(index);
+    int numRows = dataBlock.getNumberOfRows();
+    int[] rows = new int[numRows];
+    int outRowId = 0;
+    for (int inRowId = 0; inRowId < numRows; inRowId++) {
+      if (dataBlock.getInt(inRowId, filterArgId) == 1) {
+        if (nullBitmap != null && nullBitmap.contains(inRowId)) {
+          outRowId++;
+          continue;
+        }
+        switch (storedType) {
+          case INT_ARRAY:
+            rows[outRowId++] = dataBlock.getIntArray(inRowId, index).length;
+            break;
+          case LONG_ARRAY:
+            rows[outRowId++] = dataBlock.getLongArray(inRowId, index).length;
+            break;
+          case FLOAT_ARRAY:
+            rows[outRowId++] = dataBlock.getFloatArray(inRowId, index).length;
+            break;
+          case DOUBLE_ARRAY:
+            rows[outRowId++] = dataBlock.getDoubleArray(inRowId, index).length;
+            break;
+          case STRING_ARRAY:
+            rows[outRowId++] = dataBlock.getStringArray(inRowId, index).length;
+            break;
+          default:
+            rows[outRowId++] = 0;
+            break;
+        }
       }
     }
     return Arrays.copyOfRange(rows, 0, outRowId);

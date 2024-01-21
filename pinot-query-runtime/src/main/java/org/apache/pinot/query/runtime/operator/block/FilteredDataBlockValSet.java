@@ -117,27 +117,27 @@ public class FilteredDataBlockValSet extends DataBlockValSet {
 
   @Override
   public int[][] getIntValuesMV() {
-    throw new UnsupportedOperationException();
+    return DataBlockUtils.extractIntMultiValuesForColumn(_dataBlock, _index, _filterIdx);
   }
 
   @Override
   public long[][] getLongValuesMV() {
-    throw new UnsupportedOperationException();
+    return DataBlockUtils.extractLongMultiValuesForColumn(_dataBlock, _index, _filterIdx);
   }
 
   @Override
   public float[][] getFloatValuesMV() {
-    throw new UnsupportedOperationException();
+    return DataBlockUtils.extractFloatMultiValuesForColumn(_dataBlock, _index, _filterIdx);
   }
 
   @Override
   public double[][] getDoubleValuesMV() {
-    throw new UnsupportedOperationException();
+    return DataBlockUtils.extractDoubleMultiValuesForColumn(_dataBlock, _index, _filterIdx);
   }
 
   @Override
   public String[][] getStringValuesMV() {
-    throw new UnsupportedOperationException();
+    return DataBlockUtils.extractStringMultiValuesForColumn(_dataBlock, _index, _filterIdx);
   }
 
   @Override
@@ -147,6 +147,6 @@ public class FilteredDataBlockValSet extends DataBlockValSet {
 
   @Override
   public int[] getNumMVEntries() {
-    throw new UnsupportedOperationException();
+    return DataBlockUtils.extractNumMVEntriesForColumn(_dataBlock, _index, _filterIdx);
   }
 }
