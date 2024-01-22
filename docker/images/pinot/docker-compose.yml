@@ -63,6 +63,11 @@ services:
     hostname: pinot-broker
     ports:
       - "8099:8099"
+      - "5006:5006"
+    volumes:
+      - ./../../../build/lib/pinot-all-1.0.0-jar-with-dependencies.jar:/opt/pinot/lib/pinot-all-1.0.0-jar-with-dependencies.jar
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
     command: StartBroker -zkAddress zookeeper:2181
     depends_on:
       - zookeeper
