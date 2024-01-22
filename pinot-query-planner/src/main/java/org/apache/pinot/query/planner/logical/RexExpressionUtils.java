@@ -146,19 +146,21 @@ public class RexExpressionUtils {
 
   private static RexExpression handleSearch(RexCall rexCall) {
     List<RexNode> operands = rexCall.getOperands();
-    RexInputRef rexInputRef = (RexInputRef) operands.get(0);
+    RexNode rexInputRefOrExpression = operands.get(0);
     RexLiteral rexLiteral = (RexLiteral) operands.get(1);
     ColumnDataType dataType = RelToPlanNodeConverter.convertToColumnDataType(rexLiteral.getType());
     Sarg sarg = rexLiteral.getValueAs(Sarg.class);
     if (sarg.isPoints()) {
       return new RexExpression.FunctionCall(SqlKind.IN, dataType, SqlKind.IN.name(),
-          toFunctionOperands(rexInputRef, sarg.rangeSet.asRanges(), dataType));
+          toFunctionOperands(rexInputRefOrExpression, sarg.rangeSet.asRanges(), dataType));
     } else if (sarg.isComplementedPoints()) {
       return new RexExpression.FunctionCall(SqlKind.NOT_IN, dataType, SqlKind.NOT_IN.name(),
-          toFunctionOperands(rexInputRef, sarg.rangeSet.complement().asRanges(), dataType));
+          toFunctionOperands(rexInputRefOrExpression, sarg.rangeSet.complement().asRanges(), dataType));
     } else {
+      Preconditions.checkState(rexInputRefOrExpression instanceof RexInputRef,
+          "Range search only supports input reference, got: %s", rexInputRefOrExpression.getKind());
       Set<Range<?>> ranges = sarg.rangeSet.asRanges();
-      return convertRangesToOr(dataType, rexInputRef, ranges);
+      return convertRangesToOr(dataType, (RexInputRef) rexInputRefOrExpression, ranges);
     }
   }
 
@@ -234,10 +236,10 @@ public class RexExpressionUtils {
   /**
    * Transforms a set of <b>point based</b> ranges into a list of expressions.
    */
-  private static List<RexExpression> toFunctionOperands(RexInputRef rexInputRef, Set<Range> ranges,
+  private static List<RexExpression> toFunctionOperands(RexNode rexInputRefOrExpression, Set<Range> ranges,
       ColumnDataType dataType) {
     List<RexExpression> result = new ArrayList<>(ranges.size() + 1);
-    result.add(fromRexInputRef(rexInputRef));
+    result.add(fromRexNode(rexInputRefOrExpression));
     for (Range range : ranges) {
       result.add(new RexExpression.Literal(dataType, convertValue(dataType, range.lowerEndpoint())));
     }
